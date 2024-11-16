@@ -10,23 +10,35 @@
   const name    = ref('')
   const content = ref('')
 
-  function fetchTodos() {
-    client.models.Todo.observeQuery().subscribe(
-      {
-        next: ({ items, isSynced }) => {
-          todos.value = items
-        }
+  const fetchTodos = async () => {
+    try {
+      const { data: fetchedTodos, errors } = await client.models.Todo.list()
+      if (errors) {
+        console.log("Error fetching todos:", errors)
+      } else {
+        todos.value = fetchedTodos
       }
-    )
+    } catch (error) {
+      console.error("Unexpected error fetching todos:", error)
+    }
   }
 
-  function createTodo() {
-    client.models.Todo.create(
-      {
-        name:    name.value,
-        content: content.value
-      }
-    ).then(() => { fetchTodos() })
+  const createTodo = async() => {
+    try {
+      await client.models.Todo.create(
+        {
+          name:    name.value,
+          content: content.value
+        }
+      )
+      
+      name.value    = ''
+      content.value = ''
+
+      fetchTodos()
+    } catch (error) {
+      console.error("Error creating todo:", error);
+    }
   }
 
   onMounted(() => { fetchTodos() })
