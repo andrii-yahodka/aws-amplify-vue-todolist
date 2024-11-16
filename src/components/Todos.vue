@@ -1,55 +1,48 @@
 <script setup lang="ts">
-import '@/assets/main.css';
-import { onMounted, ref } from 'vue';
-import type { Schema } from '../../amplify/data/resource';
-import { generateClient } from 'aws-amplify/data';
+  import { generateClient } from "aws-amplify/data";
+  import type { Schema } from "../../amplify/data/resource"
 
-const client = generateClient<Schema>();
+  const client = generateClient<Schema>()
 
-// create a reactive reference to the array of todos
-const todos = ref<Array<Schema['Todo']["type"]>>([]);
+  import { ref, onMounted } from 'vue'
 
-function listTodos() {
-  client.models.Todo.observeQuery().subscribe({
-    next: ({ items, isSynced }) => {
-      todos.value = items
-     },
-  }); 
-}
+  const todos   = ref<Array<Schema['Todo']["type"]>>([])
+  const name    = ref('')
+  const content = ref('')
 
-function createTodo() {
-  client.models.Todo.create({
-    content: window.prompt("Todo content")
-  }).then(() => {
-    // After creating a new todo, update the list of todos
-    listTodos();
-  });
-}
-    
-// fetch todos when the component is mounted
- onMounted(() => {
-  listTodos();
-});
+  function fetchTodos() {
+    client.models.Todo.observeQuery().subscribe(
+      {
+        next: ({ items, isSynced }) => {
+          todos.value = items
+        }
+      }
+    )
+  }
 
+  function createTodo() {
+    client.models.Todo.create(
+      {
+        name:    name.value,
+        content: content.value
+      }
+    ).then(() => { fetchTodos() })
+  }
+
+  onMounted(() => { fetchTodos() })
 </script>
 
 <template>
-  <main>
-    <h1>My todos</h1>
-    <button @click="createTodo">+ new</button>
-    <ul>
-      <li 
-        v-for="todo in todos" 
-        :key="todo.id">
-        {{ todo.content }}
-      </li>
-    </ul>
-    <div>
-      🥳 App successfully hosted. Try creating a new todo.
-      <br />
-      <a href="https://docs.amplify.aws/gen2/start/quickstart/nextjs-pages-router/">
-        Review next steps of this tutorial.
-      </a>
-    </div>
-  </main>
+  <input type="text" v-model="name" placeholder="Todo name">
+  <input type="text" v-model="content" placeholder="Todo description">
+  
+  <button @click="createTodo">Create Todo</button>
+
+  <h1>My todos</h1>
+  <ul>
+    <li
+      v-for="todo in todos" :key="todo.id">
+      {{ todo.name }} - {{ todo.content }}
+    </li>
+  </ul>
 </template>
