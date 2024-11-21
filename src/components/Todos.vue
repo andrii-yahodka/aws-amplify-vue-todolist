@@ -56,6 +56,16 @@ const createTodo = async () => {
   }
 };
 
+const deleteTodo = async (todoId: string) => {
+  try {
+    await client.models.Todo.delete({ id: todoId })
+    
+    fetchTodos()
+  } catch (error) {
+    console.error("Error deleting todo:", error);
+  }
+}
+
 // Fetch todos when the component is mounted
 onMounted(() => {
   fetchTodos();
@@ -96,7 +106,7 @@ onMounted(() => {
     <h2>My Todos</h2>
     <b-container fluid>
       <b-row>
-        <b-col v-for="(todo, index) in todos" :key="todo.id" cols="12" md="3">
+        <b-col v-for="(todo, index) in todos" :key="todo.id" cols="12" md="4">
           <b-card
             :title="todo.name"
             img-src="https://picsum.photos/300/300/?image=41"
@@ -108,7 +118,9 @@ onMounted(() => {
               {{ todo.content }}
             </b-card-text>
             <template #footer>
-              <small class="text-muted">{{ todo.updatedAt }}</small>
+              <button @click="deleteTodo(todo.id)" class="btn btn-link float-end p-0" aria-label="Delete Todo">
+                <i class="bi bi-trash text-danger"></i>
+              </button>
             </template>
           </b-card>
         </b-col>
