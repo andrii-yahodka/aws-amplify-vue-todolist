@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "../../amplify/data/resource";
+import { generateClient } from "aws-amplify/data"
+import { getCurrentUser } from 'aws-amplify/auth'
+import type { Schema } from "../../amplify/data/resource"
 
-const client = generateClient<Schema>();
+const client = generateClient<Schema>(
+  { authMode: 'userPool' }
+);
 
 import { ref, onMounted } from 'vue';
 
@@ -12,7 +15,10 @@ const content = ref('');
 
 const fetchTodos = async () => {
   try {
-    const { data: fetchedTodos, errors } = await client.models.Todo.list();
+    const { userId } = await getCurrentUser()
+
+    const { data: fetchedTodos, errors } = await client.models.Todo.listTodoByUserId({ userId: userId })
+
     if (errors) {
       console.log("Error fetching todos:", errors);
     } else {
@@ -25,10 +31,19 @@ const fetchTodos = async () => {
 
 const createTodo = async () => {
   try {
-    await client.models.Todo.create({
-      name: name.value,
-      content: content.value
-    });
+
+    const { userId } = await getCurrentUser()
+    
+    await client.models.Todo.create(
+      {
+        name: name.value,
+        content: content.value,
+        userId: userId
+      },
+      {
+        authMode: 'userPool'
+      }
+    )
 
     // Clear the form inputs after adding a new todo
     name.value = '';

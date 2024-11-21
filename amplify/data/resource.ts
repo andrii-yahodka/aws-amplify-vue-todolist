@@ -10,9 +10,13 @@ const schema = a.schema({
   Todo: a
     .model({
       name:    a.string(),
-      content: a.string()
+      content: a.string(),
+      userId:  a.string()
     })
-    .authorization((allow) => [allow.publicApiKey()]),
+    .secondaryIndexes(
+      (index) => [index('userId')]
+    )
+    .authorization(allow => [allow.ownerDefinedIn('userId')]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
