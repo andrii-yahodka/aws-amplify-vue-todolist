@@ -93,21 +93,26 @@ onMounted(() => {
       </div>
     </form>
 
-    <!-- Todo Table -->
     <h2>My Todos</h2>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Content</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="todo in todos" :key="todo.id">
-          <td>{{ todo.name }}</td>
-          <td>{{ todo.content }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <b-container fluid>
+      <b-row>
+        <b-col v-for="(todo, index) in todos" :key="todo.id" cols="12" md="3">
+          <b-card
+            :title="todo.name"
+            img-src="https://picsum.photos/300/300/?image=41"
+            img-alt="Image"
+            img-top
+            class="mb-4"
+          >
+            <b-card-text>
+              {{ todo.content }}
+            </b-card-text>
+            <template #footer>
+              <small class="text-muted">{{ todo.updatedAt }}</small>
+            </template>
+          </b-card>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
