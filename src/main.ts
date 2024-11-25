@@ -4,6 +4,7 @@ import App from "./App.vue"
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
 
+// @ts-ignore
 import BootstrapVue3 from 'bootstrap-vue-3'
 
 // Import Bootstrap CSS and BootstrapVue styles
