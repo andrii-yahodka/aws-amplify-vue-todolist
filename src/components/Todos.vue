@@ -7,6 +7,14 @@ const client = generateClient<Schema>(
   { authMode: 'userPool' }
 );
 
+const callSayHello = async () => {
+  const { data: result, errors } = await client.queries.sayHello()
+
+  console.log(result)
+}
+
+callSayHello()
+
 import { ref, onMounted } from 'vue';
 
 const todos = ref<Array<Schema['Todo']["type"]>>([]);

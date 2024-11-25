@@ -1,5 +1,7 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
+import { sayHello } from "../functions/say-hello/resource"
+
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
 adding a new "isDone" field as a boolean. The authorization rule below
@@ -17,6 +19,13 @@ const schema = a.schema({
       (index) => [index('userId')]
     )
     .authorization(allow => [allow.ownerDefinedIn('userId')]),
+  
+
+  sayHello: a
+    .query()
+    .returns(a.string())
+    .handler(a.handler.function(sayHello))
+    .authorization((allow) => [allow.authenticated()])
 });
 
 export type Schema = ClientSchema<typeof schema>;
